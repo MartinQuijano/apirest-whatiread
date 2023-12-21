@@ -1,10 +1,11 @@
 package quijano.apirest.User;
 
-import java.util.Set;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 
 import quijano.apirest.Book.Book;
 
 public interface UserService {
     
-    public Set<Book> getUserBooks(String username);
+    public Page<Book> getUserBooks(String username, Pageable pageable);
 }

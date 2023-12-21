@@ -28,7 +28,7 @@ public class BookController {
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping
     public Long delete(@RequestBody Book book, @AuthenticationPrincipal UserDetails userDetails){
-        System.out.println("asdasd");
+        System.out.println(book);
         return bookService.deleteBook(book, userDetails.getUsername());
     }
 }
