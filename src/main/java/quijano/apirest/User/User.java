@@ -1,6 +1,7 @@
 package quijano.apirest.User;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,20 +40,36 @@ public class User implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     @Column(nullable = false)
     String username;
+
     String password;
 
     @Enumerated(EnumType.ORDINAL)
     Role role;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
         name = "user_book",
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id")
     )
     Set<Book> books;
+
+    public void addBook(Book book){
+        books.add(book);
+        book.getUsers().add(this);
+    }
+
+    public void removeBook(String  bookTitle) {
+        Book book = this.books.stream().filter(t -> t.getTitle().equals(bookTitle)).findFirst().orElse(null);
+
+        if (book != null) {
+            this.books.remove(book);
+            book.getUsers().remove(this);
+        }
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

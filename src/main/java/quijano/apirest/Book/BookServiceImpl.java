@@ -28,24 +28,26 @@ public class BookServiceImpl implements BookService{
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
-            user.getBooks().add(book);
-            userRepository.save(user);
-        }
 
-        return bookRepository.save(book);
+            Book existingBook = bookRepository.findByTitle(book.title);
+            if(existingBook != null){
+                System.out.println("The book already exists!");
+                user.addBook(existingBook);
+                return existingBook;
+            } else {
+                user.addBook(book);
+            }
+            
+        }
+        
+        /* return bookRepository.save(book); */
+        return null;
     }
 
     public Long deleteBook(Book book, String username) {
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-        System.out.println("Deleting book with title: " + book.title);
-        Book bookToDelete = bookRepository.findByTitle(book.title);
-        System.out.println("Deleting book: " + bookToDelete);
-        if(optionalUser.isPresent()){
-            User user = optionalUser.get();
-            user.getBooks().remove(bookToDelete);
-            userRepository.save(user);
-        }
-
-        return bookRepository.deleteByTitle(book.title);
+        User user = userRepository.findByUsername(username).orElseThrow();
+        user.removeBook(book.title);
+        userRepository.save(user);
+        return 1L;
     }
 }
