@@ -1,7 +1,6 @@
 package quijano.apirest.User;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,20 +13,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import quijano.apirest.Book.Book;
+import quijano.apirest.UserBook.UserBook;
 
 @Data
 @Builder
@@ -48,27 +44,21 @@ public class User implements UserDetails{
 
     @Enumerated(EnumType.ORDINAL)
     Role role;
+    
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
+    Set<UserBook> userBooks;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-        name = "user_book",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id")
-    )
-    Set<Book> books;
-
-    public void addBook(Book book){
-        books.add(book);
-        book.getUsers().add(this);
+    public Set<UserBook> getUserBooks() {
+        return userBooks;
     }
 
-    public void removeBook(String  bookTitle) {
-        Book book = this.books.stream().filter(t -> t.getTitle().equals(bookTitle)).findFirst().orElse(null);
-
-        if (book != null) {
-            this.books.remove(book);
-            book.getUsers().remove(this);
-        }
+    public void addUserBook(UserBook userBook){
+        userBooks.add(userBook);
+    }
+    
+    @Override
+    public String toString(){
+        return "User [id=" + id + ", username=" + username + ", role=" + role + /* ", userBooks="+ userBooks.toString() + */"]";
     }
 
     @Override

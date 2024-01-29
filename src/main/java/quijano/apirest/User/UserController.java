@@ -31,7 +31,7 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/books")
-    public Page<Book> getUserBooks(@AuthenticationPrincipal UserDetails userDetails, @PageableDefault(size = 5/* , sort = {"id"}, direction = Sort.Direction.DESC */) Pageable pageable){
+    public Page<Book> getUserBooks(@AuthenticationPrincipal UserDetails userDetails, @PageableDefault(size = 2) Pageable pageable){
         return userService.getUserBooks(userDetails.getUsername(), pageable);
     }
 }

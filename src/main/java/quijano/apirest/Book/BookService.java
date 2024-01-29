@@ -1,9 +1,10 @@
 package quijano.apirest.Book;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookService {
-    public Book createBook(Book book, String username);
+    public Book createBook(String bookTitle, LocalDateTime date, String username);
 
     public List<Book> getAllBooks();
 

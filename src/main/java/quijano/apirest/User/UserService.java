@@ -8,5 +8,4 @@ import quijano.apirest.Book.Book;
 public interface UserService {
     
     public Page<Book> getUserBooks(String username, Pageable pageable);
-    public Long deleteBook(Book book, String username);
 }

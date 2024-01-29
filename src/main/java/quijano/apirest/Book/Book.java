@@ -1,52 +1,51 @@
 package quijano.apirest.Book;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import quijano.apirest.User.User;
+import quijano.apirest.UserBook.UserBook;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "books", uniqueConstraints = {@UniqueConstraint(columnNames = {"title"})})
-@EqualsAndHashCode(exclude="users")
 public class Book {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    Long id;
 
     @Column(nullable = false)
     @NotBlank
     String title;
 
-    LocalDateTime date;
+    @OneToMany(mappedBy = "book", cascade = {CascadeType.ALL})
+    Set<UserBook> userBooks = new HashSet<>();
+    
+    public Set<UserBook> getUserBooks() {
+        return userBooks;
+    }
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "books")
-    @JsonIgnore
-    Set<User> users = new HashSet<>();
+    public void addUserBook(UserBook userBook){
+        userBooks.add(userBook);
+    }
 
     @Override
     public String toString(){
-        return "Book [id=" + id + ", title=" + title + ", date=" + date + "]";
+        return "Book [id=" + id + ", title=" + title + "]";
     }
 }

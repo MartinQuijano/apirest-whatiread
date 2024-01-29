@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import quijano.apirest.User.AddBookRequest;
+
 @RestController
 @RequestMapping(value = "/api/v1/books")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -21,8 +23,8 @@ public class BookController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public Book save(@RequestBody Book book, @AuthenticationPrincipal UserDetails userDetails){
-        return bookService.createBook(book, userDetails.getUsername());
+    public Book save(@RequestBody AddBookRequest bookRequest, @AuthenticationPrincipal UserDetails userDetails){
+         return bookService.createBook(bookRequest.getTitle(), bookRequest.getDate(), userDetails.getUsername());
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -1,5 +1,6 @@
 package quijano.apirest.Book;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import quijano.apirest.User.User;
 import quijano.apirest.User.UserRepository;
+import quijano.apirest.UserBook.UserBook;
+import quijano.apirest.UserBook.UserBookRepository;
 
 @Service
 @Transactional
@@ -20,34 +23,40 @@ public class BookServiceImpl implements BookService{
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserBookRepository userBookRepository;
+
     public List<Book> getAllBooks(){
         return bookRepository.findAll();
     }
 
-    public Book createBook(Book book, String username){
+    public Book createBook(String bookTitle, LocalDateTime date, String username){
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if(optionalUser.isPresent()){
             User user = optionalUser.get();
-
-            Book existingBook = bookRepository.findByTitle(book.title);
+            Book existingBook = bookRepository.findByTitle(bookTitle);
             if(existingBook != null){
-                System.out.println("The book already exists!");
-                user.addBook(existingBook);
-                return existingBook;
+                UserBook userBook = new UserBook(user, existingBook, date);
+                userBookRepository.save(userBook);
+                user.addUserBook(userBook);
             } else {
-                user.addBook(book);
-            }
-            
+                Book book = new Book();
+                book.setTitle(bookTitle);
+                bookRepository.save(book);
+                UserBook userBook = new UserBook(user, book, date);
+                userBookRepository.save(userBook);
+                user.addUserBook(userBook);
+            }         
         }
-        
-        /* return bookRepository.save(book); */
         return null;
     }
 
     public Long deleteBook(Book book, String username) {
         User user = userRepository.findByUsername(username).orElseThrow();
-        user.removeBook(book.title);
-        userRepository.save(user);
+        UserBook userBook = userBookRepository.findByUserIdAndBookTitle(user.getId(), book.getTitle());
+        if(userBook != null){
+            userBookRepository.delete(userBook);
+        }
         return 1L;
     }
 }
