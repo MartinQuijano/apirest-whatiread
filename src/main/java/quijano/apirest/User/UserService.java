@@ -3,9 +3,9 @@ package quijano.apirest.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
-import quijano.apirest.Book.Book;
+import quijano.apirest.UserBook.UserBookResponse;
 
 public interface UserService {
     
-    public Page<Book> getUserBooks(String username, Pageable pageable);
+    public Page<UserBookResponse> getUserBooks(String username, Pageable pageable);
 }

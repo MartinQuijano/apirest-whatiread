@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.RequiredArgsConstructor;
-import quijano.apirest.Book.Book;
+import quijano.apirest.UserBook.UserBookResponse;
 
 @RestController
 @RequestMapping(value = "/api/v1/user")
@@ -31,7 +31,8 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/books")
-    public Page<Book> getUserBooks(@AuthenticationPrincipal UserDetails userDetails, @PageableDefault(size = 2) Pageable pageable){
+    public Page<UserBookResponse> getUserBooks(@AuthenticationPrincipal UserDetails userDetails, @PageableDefault(size = 2) Pageable pageable){
         return userService.getUserBooks(userDetails.getUsername(), pageable);
     }
+
 }
